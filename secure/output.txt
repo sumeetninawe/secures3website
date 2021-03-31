@@ -1,0 +1,333 @@
+An execution plan has been generated and is shown below.
+Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_cloudfront_distribution.s3_distribution will be created
+  + resource "aws_cloudfront_distribution" "s3_distribution" {
+      + arn                            = (known after apply)
+      + caller_reference               = (known after apply)
+      + default_root_object            = "index.html"
+      + domain_name                    = (known after apply)
+      + enabled                        = true
+      + etag                           = (known after apply)
+      + hosted_zone_id                 = (known after apply)
+      + http_version                   = "http2"
+      + id                             = (known after apply)
+      + in_progress_validation_batches = (known after apply)
+      + is_ipv6_enabled                = true
+      + last_modified_time             = (known after apply)
+      + price_class                    = "PriceClass_200"
+      + retain_on_delete               = false
+      + status                         = (known after apply)
+      + tags                           = {
+          + "Environment" = "production"
+        }
+      + trusted_signers                = (known after apply)
+      + wait_for_deployment            = true
+
+      + default_cache_behavior {
+          + allowed_methods        = [
+              + "GET",
+              + "HEAD",
+            ]
+          + cached_methods         = [
+              + "GET",
+              + "HEAD",
+            ]
+          + compress               = false
+          + default_ttl            = 3600
+          + max_ttl                = 86400
+          + min_ttl                = 0
+          + target_origin_id       = "S3OriginConfig"
+          + trusted_signers        = (known after apply)
+          + viewer_protocol_policy = "https-only"
+
+          + forwarded_values {
+              + headers                 = (known after apply)
+              + query_string            = false
+              + query_string_cache_keys = (known after apply)
+
+              + cookies {
+                  + forward           = "none"
+                  + whitelisted_names = (known after apply)
+                }
+            }
+        }
+
+      + logging_config {
+          + bucket          = (known after apply)
+          + include_cookies = false
+          + prefix          = "cloudfrontlogs"
+        }
+
+      + origin {
+          + domain_name = (known after apply)
+          + origin_id   = "S3OriginConfig"
+
+          + s3_origin_config {
+              + origin_access_identity = (known after apply)
+            }
+        }
+
+      + restrictions {
+          + geo_restriction {
+              + locations        = [
+                  + "CA",
+                  + "DE",
+                  + "GB",
+                  + "US",
+                ]
+              + restriction_type = "whitelist"
+            }
+        }
+
+      + viewer_certificate {
+          + cloudfront_default_certificate = true
+          + minimum_protocol_version       = "TLSv1"
+        }
+    }
+
+  # aws_cloudfront_origin_access_identity.origin_access_identity will be created
+  + resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+      + caller_reference                = (known after apply)
+      + cloudfront_access_identity_path = (known after apply)
+      + comment                         = "Some comment"
+      + etag                            = (known after apply)
+      + iam_arn                         = (known after apply)
+      + id                              = (known after apply)
+      + s3_canonical_user_id            = (known after apply)
+    }
+
+  # aws_kms_key.a will be created
+  + resource "aws_kms_key" "a" {
+      + arn                      = (known after apply)
+      + customer_master_key_spec = "SYMMETRIC_DEFAULT"
+      + deletion_window_in_days  = 10
+      + description              = "KMS key"
+      + enable_key_rotation      = false
+      + id                       = (known after apply)
+      + is_enabled               = true
+      + key_id                   = (known after apply)
+      + key_usage                = "ENCRYPT_DECRYPT"
+      + policy                   = (known after apply)
+    }
+
+  # aws_route53_record.main will be created
+  + resource "aws_route53_record" "main" {
+      + allow_overwrite = (known after apply)
+      + fqdn            = (known after apply)
+      + id              = (known after apply)
+      + name            = "examplewebsite1234.com"
+      + type            = "A"
+      + zone_id         = (known after apply)
+
+      + alias {
+          + evaluate_target_health = false
+          + name                   = (known after apply)
+          + zone_id                = (known after apply)
+        }
+    }
+
+  # aws_route53_zone.main will be created
+  + resource "aws_route53_zone" "main" {
+      + comment       = "Managed by Terraform"
+      + force_destroy = false
+      + id            = (known after apply)
+      + name          = "examplewebsite1234.com"
+      + name_servers  = (known after apply)
+      + zone_id       = (known after apply)
+    }
+
+  # aws_s3_bucket.bucket will be created
+  + resource "aws_s3_bucket" "bucket" {
+      + acceleration_status         = (known after apply)
+      + acl                         = "private"
+      + arn                         = (known after apply)
+      + bucket                      = "examplewebsite1234.com"
+      + bucket_domain_name          = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + policy                      = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = [
+                          + "s3:GetObject",
+                        ]
+                      + Effect    = "Allow"
+                      + Principal = "*"
+                      + Resource  = [
+                          + "arn:aws:s3:::examplewebsite1234.com/*",
+                        ]
+                      + Sid       = "MainBucketPermissions"
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + logging {
+          + target_bucket = (known after apply)
+          + target_prefix = "log/"
+        }
+
+      + server_side_encryption_configuration {
+          + rule {
+              + apply_server_side_encryption_by_default {
+                  + kms_master_key_id = (known after apply)
+                  + sse_algorithm     = "aws:kms"
+                }
+            }
+        }
+
+      + versioning {
+          + enabled    = true
+          + mfa_delete = false
+        }
+
+      + website {
+          + error_document = "error.html"
+          + index_document = "index.html"
+        }
+    }
+
+  # aws_s3_bucket.log_bucket will be created
+  + resource "aws_s3_bucket" "log_bucket" {
+      + acceleration_status         = (known after apply)
+      + acl                         = "log-delivery-write"
+      + arn                         = (known after apply)
+      + bucket                      = "websitelogs1234"
+      + bucket_domain_name          = (known after apply)
+      + bucket_regional_domain_name = (known after apply)
+      + force_destroy               = false
+      + hosted_zone_id              = (known after apply)
+      + id                          = (known after apply)
+      + policy                      = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = [
+                          + "s3:GetObject",
+                        ]
+                      + Effect    = "Deny"
+                      + Principal = "*"
+                      + Resource  = [
+                          + "arn:aws:s3:::websitelogs1234/*",
+                        ]
+                      + Sid       = "MainBucketPermissions"
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + region                      = (known after apply)
+      + request_payer               = (known after apply)
+      + website_domain              = (known after apply)
+      + website_endpoint            = (known after apply)
+
+      + server_side_encryption_configuration {
+          + rule {
+              + apply_server_side_encryption_by_default {
+                  + kms_master_key_id = (known after apply)
+                  + sse_algorithm     = "aws:kms"
+                }
+            }
+        }
+
+      + versioning {
+          + enabled    = (known after apply)
+          + mfa_delete = (known after apply)
+        }
+    }
+
+  # aws_s3_bucket_object.error will be created
+  + resource "aws_s3_bucket_object" "error" {
+      + acl                    = "public-read"
+      + bucket                 = "examplewebsite1234.com"
+      + content_type           = "text/html"
+      + etag                   = (known after apply)
+      + force_destroy          = false
+      + id                     = (known after apply)
+      + key                    = "error.html"
+      + kms_key_id             = (known after apply)
+      + server_side_encryption = (known after apply)
+      + source                 = "./error.html"
+      + storage_class          = (known after apply)
+      + version_id             = (known after apply)
+    }
+
+  # aws_s3_bucket_object.index will be created
+  + resource "aws_s3_bucket_object" "index" {
+      + acl                    = "public-read"
+      + bucket                 = "examplewebsite1234.com"
+      + content_type           = "text/html"
+      + etag                   = (known after apply)
+      + force_destroy          = false
+      + id                     = (known after apply)
+      + key                    = "index.html"
+      + kms_key_id             = (known after apply)
+      + server_side_encryption = (known after apply)
+      + source                 = "./index.html"
+      + storage_class          = (known after apply)
+      + version_id             = (known after apply)
+    }
+
+Plan: 9 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+aws_cloudfront_origin_access_identity.origin_access_identity: Creating...
+aws_route53_zone.main: Creating...
+aws_kms_key.a: Creating...
+aws_kms_key.a: Creation complete after 0s [id=ea5f66b3-ff07-4571-80de-7acb59165ba2]
+aws_s3_bucket.log_bucket: Creating...
+aws_cloudfront_origin_access_identity.origin_access_identity: Creation complete after 1s [id=E985XKOYM8QVM]
+aws_s3_bucket.log_bucket: Creation complete after 3s [id=websitelogs1234]
+aws_s3_bucket.bucket: Creating...
+aws_s3_bucket.bucket: Creation complete after 4s [id=examplewebsite1234.com]
+aws_s3_bucket_object.index: Creating...
+aws_s3_bucket_object.error: Creating...
+aws_cloudfront_distribution.s3_distribution: Creating...
+aws_s3_bucket_object.index: Creation complete after 0s [id=index.html]
+aws_s3_bucket_object.error: Creation complete after 0s [id=error.html]
+aws_route53_zone.main: Still creating... [10s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [10s elapsed]
+aws_route53_zone.main: Still creating... [20s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [20s elapsed]
+aws_route53_zone.main: Still creating... [30s elapsed]
+aws_route53_zone.main: Creation complete after 33s [id=Z0932733F7HB54DJ9R9]
+aws_cloudfront_distribution.s3_distribution: Still creating... [30s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [40s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [50s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [1m0s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [1m10s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [1m20s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [1m30s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [1m40s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [1m50s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [2m0s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [2m10s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [2m20s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [2m30s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [2m40s elapsed]
+aws_cloudfront_distribution.s3_distribution: Still creating... [2m50s elapsed]
+aws_cloudfront_distribution.s3_distribution: Creation complete after 2m54s [id=E24PBD1VRZTV8N]
+aws_route53_record.main: Creating...
+aws_route53_record.main: Still creating... [10s elapsed]
+aws_route53_record.main: Still creating... [20s elapsed]
+aws_route53_record.main: Still creating... [30s elapsed]
+aws_route53_record.main: Creation complete after 33s [id=Z0932733F7HB54DJ9R9_examplewebsite1234.com_A]
+
+Apply complete! Resources: 9 added, 0 changed, 0 destroyed.
